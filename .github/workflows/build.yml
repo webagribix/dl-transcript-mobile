@@ -1,11 +1,18 @@
 name: Flutter CI
 
 on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
   workflow_dispatch:
+    inputs:
+      build_apk:
+        description: 'Build Split APKs'
+        required: true
+        type: boolean
+        default: true
+      build_aab:
+        description: 'Build AAB (App Bundle)'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -30,18 +37,22 @@ jobs:
         run: flutter pub get
 
       - name: Build Split APKs
+        if: ${{ inputs.build_apk == true }}
         run: flutter build apk --split-per-abi
 
       - name: Build Android App Bundle (AAB)
+        if: ${{ inputs.build_aab == true }}
         run: flutter build appbundle
 
       - name: Upload APKs
+        if: ${{ inputs.build_apk == true }}
         uses: actions/upload-artifact@v4
         with:
           name: split-apks
           path: build/app/outputs/flutter-apk/*-release.apk
 
       - name: Upload AAB
+        if: ${{ inputs.build_aab == true }}
         uses: actions/upload-artifact@v4
         with:
           name: app-bundle
