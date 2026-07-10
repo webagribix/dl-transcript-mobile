@@ -80,6 +80,20 @@ class _TranscriptAppState extends State<TranscriptApp> {
             initialUrlRequest: URLRequest(
               url: WebUri("https://studentportal.egerton.ac.ke/"),
             ),
+            initialSettings: InAppWebViewSettings(
+              javaScriptEnabled: true,
+              domStorageEnabled: true,
+              databaseEnabled: true,
+              clearCache: true,
+              userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              allowUniversalAccessFromFileURLs: true,
+              allowFileAccessFromFileURLs: true,
+              mixedContentMode: MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+              thirdPartyCookiesEnabled: true,
+            ),
+            onReceivedServerTrustAuthRequest: (controller, challenge) async {
+              return ServerTrustAuthResponse(action: ServerTrustAuthResponseAction.PROCEED);
+            },
             onWebViewCreated: (controller) => _setupWebviewHandlers(controller),
             onProgressChanged: (controller, progress) {
               setState(() => _loadingProgress = progress / 100);
