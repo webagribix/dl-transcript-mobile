@@ -1,14 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:gal/gal.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:file_saver/file_saver.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Permission.storage.request();
@@ -273,21 +271,22 @@ class _PageSelectionSheetState extends State<PageSelectionSheet> {
         }
       }
 
-      Directory? dir;
-      if (Platform.isAndroid) {
-         dir = await getExternalStorageDirectory();
-         // fallback if null
-         dir ??= await getApplicationDocumentsDirectory();
-      } else {
-         dir = await getApplicationDocumentsDirectory();
-      }
-      
+      final pdfBytes = await pdf.save();
       final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      final String filePath = "${dir.path}/transcript_$timestamp.pdf";
-      final file = File(filePath);
-      await file.writeAsBytes(await pdf.save());
-      
-      _showFeedback("Saved PDF to $filePath");
+      final String fileName = "transcript_$timestamp";
+
+      final String? path = await FileSaver.instance.saveAs(
+        name: fileName,
+        bytes: pdfBytes,
+        fileExtension: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+
+      if (path != null && path.isNotEmpty) {
+        _showFeedback("Saved PDF to $path");
+      } else {
+        _showFeedback("PDF save cancelled or failed.");
+      }
       if (mounted) Navigator.pop(context);
     } catch (e) {
       _showFeedback("Error saving PDF: $e");
