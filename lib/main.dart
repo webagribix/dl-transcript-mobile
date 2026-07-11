@@ -60,7 +60,7 @@ class _TranscriptAppState extends State<TranscriptApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Portal Downloader', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text('Transcript Download', style: TextStyle(fontWeight: FontWeight.w600)),
         centerTitle: true,
         elevation: 0,
         scrolledUnderElevation: 2,
@@ -98,7 +98,27 @@ class _TranscriptAppState extends State<TranscriptApp> {
             },
           ),
           if (_loadingProgress < 1.0)
-            LinearProgressIndicator(value: _loadingProgress),
+            Positioned.fill(
+              child: Container(
+                color: Theme.of(context).colorScheme.surface,
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        value: _loadingProgress > 0 ? _loadingProgress : null,
+                        strokeWidth: 4,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Loading Portal... ${(_loadingProgress * 100).toInt()}%',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           if (_isDownloading)
             Positioned.fill(
               child: Container(
@@ -114,7 +134,7 @@ class _TranscriptAppState extends State<TranscriptApp> {
                         children: [
                           CircularProgressIndicator(strokeWidth: 4),
                           SizedBox(height: 20),
-                          Text('Extracting pages...', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                          Text('Getting pages...', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
@@ -133,7 +153,7 @@ class _TranscriptAppState extends State<TranscriptApp> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
             icon: const Icon(Icons.download_rounded),
-            label: const Text('Extract Transcript Pages', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            label: const Text('Download Transcript', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             onPressed: _isDownloading ? null : _triggerExtraction,
           ),
         ),
@@ -262,9 +282,10 @@ class _PageSelectionSheetState extends State<PageSelectionSheet> {
           final image = pw.MemoryImage(widget.pages[i]);
           pdf.addPage(
             pw.Page(
-              pageFormat: PdfPageFormat.a4,
+              pageFormat: PdfPageFormat(image.width!.toDouble(), image.height!.toDouble()),
+              margin: pw.EdgeInsets.zero,
               build: (pw.Context context) {
-                return pw.Center(child: pw.Image(image));
+                return pw.Image(image, fit: pw.BoxFit.contain);
               },
             ),
           );
