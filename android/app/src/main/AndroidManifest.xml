@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
     <application
-        android:label="transcript_app"
+        android:label="TS Export"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

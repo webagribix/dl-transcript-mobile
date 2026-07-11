@@ -1,6 +1,6 @@
 {
-    "name": "transcript_app",
-    "short_name": "transcript_app",
+    "name": "TS Export",
+    "short_name": "TS Export",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
